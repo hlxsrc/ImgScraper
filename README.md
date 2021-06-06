@@ -13,6 +13,8 @@ This scraper uses selenium as a way to automate the process of searching and sto
 
 Be sure to download the correct [selenium driver](https://www.selenium.dev/downloads/) and store it in the path of your choice.
 
+Also here is the new link for the [chromedriver](https://sites.google.com/chromium.org/driver/downloads).
+
 ## Arguments
 
 - `-st` or `--searchterm` receives the term to be searched.
@@ -41,6 +43,19 @@ python image_scraper_ml.py \
   -n 5 \
   -o /home/user/ImgScraper/
 ```
+
+This is an example of the usage using Bing
+
+```
+python image_scraper_ml.py \
+  -st "auto" \
+  -dp /home/user/Downloads/chromedriver \
+  -n 5 \
+  -o /home/user/ImgScraper/
+  -lk <bing_link>
+```
+
+While using the Bing scraper make sure to look for the ´nofocus´ class after the ´img´ tag.
 
 # Acknowledgments
 
