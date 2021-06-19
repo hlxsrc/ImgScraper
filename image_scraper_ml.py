@@ -1,5 +1,7 @@
+# Usage: python image_scraper_ml.py -st <"QUERY"> -dp </path/to/chromedriver> -n <N> -o </path/to/output>
+
 # Python script for scraping images from websites like www.google.com
-# This script is intented to help in the creation of an image database
+# This script is just for learning purposes
 # As seen on Towards Data Science
 
 # Imports
@@ -70,51 +72,46 @@ def fetch_image_urls(query:str, max_links_to_fetch:int,
     # Load the page
     wd.get(search_url.format(q=query))
 
+    # Get links to publications
+    urls = set()
+    links = wd.find_elements_by_css_selector("a.ui-search-link")
+    link_results = len(links)
+    for link in links:
+        if link.get_attribute('href') and 'http' in link.get_attribute('href') and 'auto.' in link.get_attribute('href'):
+            urls.add(link.get_attribute('href'))
+
+    # Create variables to store image urls
     image_urls = set()
     image_count = 0
-    results_start = 0
+    
     while image_count < max_links_to_fetch:
         scroll_to_end(wd)
 
-        # Get all image thumbnail results
-        thumbnail_results = wd.find_elements_by_css_selector("img.ui-search-result-image__element")
-        number_results = len(thumbnail_results)
-        
-        print(f"Found: {number_results} search results. Extracting links from {results_start}:{number_results}")
-        
-        for img in thumbnail_results[results_start:number_results]:
-            # Try to click every thumbnail 
-            # such that we can get the real image behind it
-            #try:
-            #    img.click()
-            #    time.sleep(sleep_between_interactions)
-            #except Exception:
-            #    continue
+        # Load page for each url
+        for url in urls:
+
+            # Load the page
+            wd.get(url)
 
             # Extract image urls    
-            actual_images = wd.find_elements_by_css_selector('img.ui-search-result-image__element')
+            actual_images = wd.find_elements_by_css_selector('img.ui-pdp-gallery__figure__image')
             for actual_image in actual_images:
                 if actual_image.get_attribute('src') and 'http' in actual_image.get_attribute('src'):
                     image_urls.add(actual_image.get_attribute('src'))
 
             image_count = len(image_urls)
 
+            # Show number of collected images and go back to previous url
+            print("Found:", len(image_urls), "image links, looking for more ...\n")
+            time.sleep(5)
+            wd.execute_script("window.history.go(-1)")
+
+            # Break if number of images is bigger or equal to number of desired images
             if len(image_urls) >= max_links_to_fetch:
                 print(f"Found: {len(image_urls)} image links, done!")
                 break
-        else:
-            print("Found:", len(image_urls), "image links, looking for more ...")
-            time.sleep(30)
-            return
-            load_more_button = wd.find_element_by_css_selector(".mye4qd")
-            if load_more_button:
-                wd.execute_script("document.querySelector('.mye4qd').click();")
-
-        # Move the result startpoint further down
-        results_start = len(thumbnail_results)
 
     return image_urls
 
 # Execute search and download
 search_and_download(args["searchterm"],args["driverpath"],args["numofimages"],args["output"])
-
