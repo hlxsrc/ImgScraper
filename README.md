@@ -47,7 +47,7 @@ python image_scraper_ml.py \
 This is an example of the usage using Bing
 
 ```
-python image_scraper_ml.py \
+python image_scraper_b.py \
   -st "auto" \
   -dp /home/user/Downloads/chromedriver \
   -n 5 \
