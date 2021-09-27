@@ -67,10 +67,14 @@ def fetch_image_urls(query:str, max_links_to_fetch:int,
         time.sleep(sleep_between_interactions)    
     
     # Build the mercado libre query
-    search_url = "https://listado.mercadolibre.com.mx/{q}#D[A:{q}]"
-
-    # Load the page
-    wd.get(search_url.format(q=query))
+    if query[0:4] == 'http':
+        search_url = query
+        # Load the page
+        wd.get(search_url)
+    else:
+        search_url = "https://listado.mercadolibre.com.mx/{q}#D[A:{q}]"
+        # Load the page
+        wd.get(search_url.format(q=query))
 
     # Get links to publications
     urls = set()
